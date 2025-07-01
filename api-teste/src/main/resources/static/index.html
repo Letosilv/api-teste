@@ -6,6 +6,7 @@
   <style>
     body { font-family: Arial; padding: 20px; }
     input, button { margin: 5px; padding: 8px; }
+    #mensagem { margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -16,26 +17,48 @@
   <input type="email" id="email" placeholder="E-mail" />
   <button onclick="cadastrarPessoa()">Cadastrar</button>
 
+  <p id="mensagem"></p>
+
   <h3>Lista de Pessoas:</h3>
   <button onclick="listarPessoas()">Atualizar Lista</button>
   <ul id="listaPessoas"></ul>
 
   <script>
     function cadastrarPessoa() {
-      const nome = document.getElementById('nome').value;
-      const email = document.getElementById('email').value;
+      const nomeInput = document.getElementById('nome');
+      const emailInput = document.getElementById('email');
+      const mensagem = document.getElementById('mensagem');
+
+      const nome = nomeInput.value.trim();
+      const email = emailInput.value.trim();
+
+      if (!nome || !email) {
+        mensagem.textContent = "Preencha todos os campos.";
+        mensagem.style.color = "red";
+        return;
+      }
 
       fetch('/pessoas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email })
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Erro ao cadastrar");
+        return res.json();
+      })
       .then(data => {
-        alert("Pessoa cadastrada com sucesso!");
+        mensagem.textContent = "Pessoa cadastrada com sucesso!";
+        mensagem.style.color = "green";
+        nomeInput.value = "";
+        emailInput.value = "";
         listarPessoas();
       })
-      .catch(err => alert("Erro ao cadastrar pessoa"));
+      .catch(err => {
+        mensagem.textContent = "Erro ao cadastrar pessoa.";
+        mensagem.style.color = "red";
+        console.error(err);
+      });
     }
 
     function listarPessoas() {
@@ -50,7 +73,11 @@
             lista.appendChild(item);
           });
         })
-        .catch(err => alert("Erro ao carregar lista"));
+        .catch(err => {
+          const mensagem = document.getElementById('mensagem');
+          mensagem.textContent = "Erro ao carregar lista.";
+          mensagem.style.color = "red";
+        });
     }
 
     window.onload = listarPessoas;
