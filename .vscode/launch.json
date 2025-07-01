@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ApiTesteApplication<api-teste>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.api_teste.ApiTesteApplication",
+            "projectName": "api-teste",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

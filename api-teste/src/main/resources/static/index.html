@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastro de Pessoas</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { margin: 5px; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Cadastro de Pessoas</h1>
+
+  <h3>Adicionar Pessoa:</h3>
+  <input type="text" id="nome" placeholder="Nome" />
+  <input type="email" id="email" placeholder="E-mail" />
+  <button onclick="cadastrarPessoa()">Cadastrar</button>
+
+  <h3>Lista de Pessoas:</h3>
+  <button onclick="listarPessoas()">Atualizar Lista</button>
+  <ul id="listaPessoas"></ul>
+
+  <script>
+    function cadastrarPessoa() {
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
+
+      fetch('/pessoas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert("Pessoa cadastrada com sucesso!");
+        listarPessoas();
+      })
+      .catch(err => alert("Erro ao cadastrar pessoa"));
+    }
+
+    function listarPessoas() {
+      fetch('/pessoas')
+        .then(res => res.json())
+        .then(pessoas => {
+          const lista = document.getElementById('listaPessoas');
+          lista.innerHTML = '';
+          pessoas.forEach(p => {
+            const item = document.createElement('li');
+            item.textContent = `${p.nome} - ${p.email}`;
+            lista.appendChild(item);
+          });
+        })
+        .catch(err => alert("Erro ao carregar lista"));
+    }
+
+    window.onload = listarPessoas;
+  </script>
+</body>
+</html>
